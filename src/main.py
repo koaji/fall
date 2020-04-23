@@ -18,10 +18,11 @@ def main():
     pygame.init()# Pygameの初期化
     screen = pygame.display.set_mode(window_size) # 400*300の画面
     pygame.display.set_caption("Test")            # タイトルバーに表示する文字
-    x0 = 40
-    y0 = 40
-    x1 = 50
-    y1 = 50
+    x0 = 10
+    y0 = 10
+    x1 = 20
+    y1 = 20
+    score = 0
 
     rect = Rect(x0, y0, x1, y1)
     stage = Rect(10,10,window_size[0] - 20, window_size[1] - 20)
@@ -31,6 +32,9 @@ def main():
     basket = basket_image.get_rect()
     basket.center = (window_size[0] / 2, window_size[1] - (basket.bottom - basket.top))
 
+    font = pygame.font.SysFont("hg正楷書体pro", 20)
+    
+    
     while (1):
         screen.fill((0,0,0))        # 画面を黒色(#000000)に塗りつぶし
         pressed_key = pygame.key.get_pressed()
@@ -42,13 +46,16 @@ def main():
             rect.move_ip(random.randrange(window_size[0]), -window_size[1] - rect.top)
             
         rect.move_ip(0,1)
-        print(rect.top,rect.left)
         screen.blit(back_ground_image, back_ground)
 
         pygame.draw.rect(screen, (0, 80, 0), rect)
         pygame.draw.rect(screen, (255, 255, 255), stage, 5)
 
-        screen.blit(basket_image,basket)
+        screen.blit(basket_image, basket)
+        
+
+        score_text = font.render("SCORE:{0}".format(score), True, (0, 0, 0))
+        screen.blit(score_text, (200, 10))
         
         pygame.display.update()  # 画面を更新
 
@@ -56,9 +63,11 @@ def main():
             if basket.top + 5 <= rect.bottom and basket.top + 5 >= rect.top:
                 rect.move_ip((random.randrange(0,window_size[0]) - rect.right),- rect.top)
                 print("get!!")
+                score = score + 1
+                print(score)
 
         if rect.bottom == window_size[1]:
-            rect.move_ip((random.randrange(0,window_size[0]) - rect.right),- rect.top)
+            rect.move_ip((random.randrange(0, window_size[0]) - rect.right), -rect.top)
 
         # イベント処理
         for event in pygame.event.get():

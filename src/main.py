@@ -5,6 +5,7 @@
 
 import sys
 import time
+import random
 
 import pygame
 from pygame.locals import *
@@ -36,10 +37,12 @@ def main():
         if pressed_key[K_LEFT]:
             basket.move_ip(-1,0)
         if pressed_key[K_RIGHT]:
-            basket.move_ip(1,0)
-        
+            basket.move_ip(1, 0)
+        if pressed_key[K_DOWN]:
+            rect.move_ip(random.randrange(window_size[0]), -window_size[1] - rect.top)
+            
         rect.move_ip(0,1)
-        
+        print(rect.top,rect.left)
         screen.blit(back_ground_image, back_ground)
 
         pygame.draw.rect(screen, (0, 80, 0), rect)
@@ -50,9 +53,12 @@ def main():
         pygame.display.update()  # 画面を更新
 
         if basket.left <= rect.left and basket.right >= rect.right:
-            if basket.top + 5 <= rect.bottom and basket.top + 5 >= rect.top: 
+            if basket.top + 5 <= rect.bottom and basket.top + 5 >= rect.top:
+                rect.move_ip((random.randrange(0,window_size[0]) - rect.right),- rect.top)
                 print("get!!")
 
+        if rect.bottom == window_size[1]:
+            rect.move_ip((random.randrange(0,window_size[0]) - rect.right),- rect.top)
 
         # イベント処理
         for event in pygame.event.get():

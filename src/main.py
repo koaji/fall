@@ -13,6 +13,10 @@ from pygame.locals import *
 
 window_size = (300, 600)
 
+class Drops:
+    def __init__(self, image_number, position):
+        self.image_num = image_number
+        self.pos = position
 
 def main():
     pygame.init()# Pygameの初期化
@@ -23,7 +27,6 @@ def main():
     stage = Rect(10, 10, window_size[0] - 20, window_size[1] - 20)
 
     drops_list = []
-    drops_pos = []
     drops_image = pygame.image.load(r".\..\resource\drops.png").convert_alpha()
     for i in range(0, 3):
         temp = pygame.Surface((20,20))
@@ -32,9 +35,15 @@ def main():
         #temp = pygame.transform.scale(temp, (40, 40))
         temp.set_colorkey(temp.get_at((0,0)), RLEACCEL)
         drops_list.append(temp)
+    
+    # アイテム生成
+    drops = []
+    for i in range(0, 10):
+        image_num = random.randrange(0,3)
+        temp = Drops(image_num, drops_list[image_num].get_rect())
         # アイテム位置を初期化
-        drops_pos.append(temp.get_rect())
-        drops_pos[i].move_ip((random.randrange(0,window_size[0]) - drops_pos[i].right),- drops_pos[i].top)
+        temp.pos.move_ip((random.randrange(0, window_size[0]) - temp.pos.right), -temp.pos.top)
+        drops.append(temp)
 
     back_ground_image = pygame.image.load(r".\..\resource\back_ground.png").convert_alpha()
     back_ground = back_ground_image.get_rect()
@@ -58,25 +67,30 @@ def main():
         screen.blit(back_ground_image, back_ground)
         pygame.draw.rect(screen, (255, 255, 255), stage, 5)
         screen.blit(basket_image, basket)
-        screen.blit(drops_list[0], drops_pos[0])
-        screen.blit(drops_list[1], drops_pos[1])
-        screen.blit(drops_list[2], drops_pos[2])
 
         score_text = font.render("SCORE:{0}".format(score), True, (0, 0, 0))
         screen.blit(score_text, (180, 10))
 
-        for i in range(0,3):
-            if basket.left <= drops_pos[i].left and basket.right >= drops_pos[i].right:
-                if basket.top + 5 <= drops_pos[i].bottom and basket.top + 5 >= drops_pos[i].top:
-                    drops_pos[i].move_ip((random.randrange(0,window_size[0]) - drops_pos[i].right),- drops_pos[i].top)
+        for i in range(0, 10):
+            
+            # アイテムを描画
+            screen.blit(drops_list[drops[i].image_num], drops[i].pos)
+            
+            # キャッチ判定
+            if basket.left <= drops[i].pos.left and basket.right >= drops[i].pos.right:
+                if basket.top + 5 <= drops[i].pos.bottom and basket.top + 5 >= drops[i].pos.top:
+                    drops[i].pos.move_ip((random.randrange(0,window_size[0]) - drops[i].pos.right),- drops[i].pos.top)
                     print("get!!")
                     score = score + 1
                     print(score)
+                    # アイテムのランダム変更
+                    drops[i].image_num = random.randrange(0,3)
 
-            if drops_pos[i].bottom == window_size[1]:
-                drops_pos[i].move_ip((random.randrange(0, window_size[0]) - drops_pos[i].right), -drops_pos[i].top)
+            if drops[i].pos.bottom == window_size[1]:
+                drops[i].pos.move_ip((random.randrange(0, window_size[0]) - drops[i].pos.right), -drops[i].pos.top)
             
-            drops_pos[i].move_ip(0, 1)
+            # すべての落ち物の落下移動
+            drops[i].pos.move_ip(0, 1)
             
 
         pygame.display.update()  # 画面を更新
